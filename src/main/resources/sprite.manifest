@@ -1,0 +1,14 @@
+# Sprite manifest format
+# Filename	Type
+background.png	0
+cannon_line.png   2
+bullet.png   3
+small-bullet.png   4
+brick.png   5
+battle-left.png   6
+battle-right.png  7
+missile-left.png  8
+missile-right.png  9
+transport-plane.png  10
+box.png   11
+
