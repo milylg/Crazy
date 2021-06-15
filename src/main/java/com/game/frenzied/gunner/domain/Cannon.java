@@ -107,6 +107,7 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
         }
 
         if (!isAntiBallWarned && antiaircraftBalls < 20) {
+            logger.info("quick shoot warn....");
             SoundEffect.forWarnClock().play();
             ScreenMessage message = new ScreenMessage("[WARN]", position, Color.RED);
             ScreenMessage.add(message);
@@ -164,7 +165,13 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
     public void addBalls(int antiaircraftBalls, int cannonBalls) {
         this.antiaircraftBalls += antiaircraftBalls;
         this.cannonBalls += cannonBalls;
-        hintMessageCallback.update(this.cannonBalls, this.antiaircraftBalls, PlaneFleet.hitPlanes(), shotCount);
+        hintMessageCallback.update(
+                this.cannonBalls,
+                this.antiaircraftBalls,
+                PlaneFleet.hitPlanes(),
+                shotCount);
+        isAntiBallWarned = false;
+        isCannonBallWarned = false;
     }
 
     public int getAntiaircraftBalls() {
