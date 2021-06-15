@@ -237,7 +237,7 @@ public class SoundEffectResourceDownLoader {
 
         SoundEffectResourceDownLoader loader
                 = new SoundEffectResourceDownLoader(
-                        "D:\\IDEA\\Code\\frenzied-gunner\\src\\main\\resources\\sound-wait\\",
+                "D:\\IDEA\\Code\\frenzied-gunner\\src\\main\\resources\\sound-wait\\",
                 "radar-ping-speed-5.mp3"
         );
 

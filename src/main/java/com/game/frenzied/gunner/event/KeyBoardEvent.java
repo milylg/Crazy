@@ -1,6 +1,6 @@
 package com.game.frenzied.gunner.event;
 
-import com.game.frenzied.gunner.ApplicationStarter;
+import com.game.frenzied.gunner.FrenziedGunner;
 import com.game.frenzied.gunner.domain.Cannon;
 
 import java.awt.event.KeyEvent;
@@ -14,7 +14,7 @@ public class KeyBoardEvent {
 
     public static void update() {
         KeyboardInput.poll();
-        player = ApplicationStarter.getCannonPlayer();
+        player = FrenziedGunner.getCannonPlayer();
         if (listener.keyDown(KeyEvent.VK_LEFT)) {
             player.turnLeft();
         }

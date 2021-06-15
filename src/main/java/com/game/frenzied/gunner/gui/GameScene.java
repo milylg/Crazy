@@ -4,7 +4,7 @@ import javax.media.opengl.*;
 
 import javax.media.opengl.awt.GLCanvas;
 
-import com.game.frenzied.gunner.ApplicationStarter;
+import com.game.frenzied.gunner.FrenziedGunner;
 import com.game.frenzied.gunner.common.ParticleSystem;
 import com.game.frenzied.gunner.common.ScreenMessage;
 import com.game.frenzied.gunner.common.Sprite;
@@ -80,7 +80,7 @@ public class GameScene extends GLCanvas {
 
             // Create sprite and load the texture files
             Sprite.loadSprites(gl);
-            ApplicationStarter.init();
+            FrenziedGunner.init();
 
             // We have to have focus for our KeyListener to get messages
             requestFocus();
@@ -95,7 +95,7 @@ public class GameScene extends GLCanvas {
             }
 
             KeyBoardEvent.update();
-            ApplicationStarter.update();
+            FrenziedGunner.update();
             render(drawable);
         }
 
@@ -194,7 +194,7 @@ public class GameScene extends GLCanvas {
         /*
          * Display message if game is paused
          */
-        if (ApplicationStarter.isPaused()) {
+        if (FrenziedGunner.isPaused()) {
             renderText(gl, "Paused", -0.25f, 0.25f);
         }
     }
@@ -218,7 +218,7 @@ public class GameScene extends GLCanvas {
      * 渲染防护盾
      */
 //    private void renderShields(GL2 gl) {
-//        Cannon player = ApplicationStarter.getCannonPlayer();
+//        Cannon player = FrenziedGunner.getCannonPlayer();
 //
 //        gl.glLoadIdentity();
 //        // Texture of the player's shield
