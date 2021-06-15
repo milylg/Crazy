@@ -40,7 +40,6 @@ public class BattlePlane extends AbstractActor implements Weapon {
     }
 
     public BattlePlane(OrientationType type) {
-
         width = BATTLE_PLANE_SIZE;
         height = BATTLE_PLANE_SIZE;
         position = new Vector(type.x, 0.35f + gen.nextFloat() / 2);
@@ -96,7 +95,9 @@ public class BattlePlane extends AbstractActor implements Weapon {
             // TODO: black and clear it
             velocity.incrementYBy(-0.001f);
             ParticleSystem.addPlasmaParticle(position);
-            isHit = true;
+            if (alive < 5) {
+                isHit = true;
+            }
             if (--alive <= 0) {
                 delete();
                 setAlive(false);
