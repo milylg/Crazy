@@ -1,8 +1,6 @@
-package com.game.frenzied.gunner.view;
+package com.game.frenzied.gunner.gui;
 
-import com.game.frenzied.gunner.common.SystemConstant;
 import com.game.frenzied.gunner.domain.Cannon;
-import com.game.frenzied.gunner.domain.PlaneFleet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +48,7 @@ public class GameGui extends JFrame {
     private JLabel cannonballRemain;
     private JLabel gameState;
     private JLabel percentage;
+    private JLabel alive;
 
     public GameGui() {
         // This means the program stops at the close of the main window.
@@ -82,6 +81,7 @@ public class GameGui extends JFrame {
         pauseGame = new Button("Pause");
         startGame = new Button("Start");
 
+        addAliveLabel(panel);
         addPercentageLabel(panel);
         addAntiaircraftBallRemainLabel(panel);
         addCannonBallRemainLabel(panel);
@@ -90,45 +90,57 @@ public class GameGui extends JFrame {
         panel.add(startGame);
         panel.add(pauseGame);
 
-        callBack = new Cannon.CallBack() {
-            @Override
-            public void update(int cannonballs, int antiBalls, int planes, int shotCount) {
-                updateAntiBallLabel(antiBalls);
-                updateCannonBallLabel(cannonballs);
-                updatePercentage(planes, shotCount);
-            }
+        callBack = (cannonballs, antiBalls, planes, shotCount) -> {
+            updateAntiBallLabel(antiBalls);
+            updateCannonBallLabel(cannonballs);
+            updateHitRate(planes, shotCount);
         };
+
+        aliveCallback = (isAlive -> {
+            updateAlive(isAlive);
+        });
 
         return panel;
     }
 
+
+    private static final Font DEFAULT_FONT = new Font(null, Font.PLAIN,15);
+
+
     private void addAntiaircraftBallRemainLabel(JPanel panel) {
         antiaircraftBallRemain = new JLabel("Anti Ball Remain:200");
         antiaircraftBallRemain.setForeground(Color.GREEN);
-        antiaircraftBallRemain.setFont(new Font(null, Font.PLAIN,16));
+        antiaircraftBallRemain.setFont(DEFAULT_FONT);
         panel.add(antiaircraftBallRemain);
     }
 
     private void addCannonBallRemainLabel(JPanel panel) {
         cannonballRemain = new JLabel("Cannon Ball Remain:200");
         cannonballRemain.setForeground(Color.GREEN);
-        cannonballRemain.setFont(new Font(null, Font.PLAIN,16));
+        cannonballRemain.setFont(DEFAULT_FONT);
         panel.add(cannonballRemain);
     }
 
     private void addPercentageLabel(JPanel panel) {
-        percentage = new JLabel("Percentage: 0.00%  | ");
+        percentage = new JLabel("Hit Rate: 0.00% | ");
         percentage.setForeground(Color.GREEN);
-        percentage.setFont(new Font(null, Font.PLAIN,16));
+        percentage.setFont(DEFAULT_FONT);
         panel.add(percentage);
     }
 
 
     private void addGameStateLabel(JPanel panel) {
-        gameState = new JLabel("State: running");
+        gameState = new JLabel("State: Running");
         gameState.setForeground(Color.GREEN);
-        gameState.setFont(new Font(null, Font.PLAIN,16));
+        gameState.setFont(DEFAULT_FONT);
         panel.add(gameState);
+    }
+
+    private void addAliveLabel(JPanel panel) {
+        alive = new JLabel("Alive: YES | ");
+        alive.setForeground(Color.GREEN);
+        alive.setFont(DEFAULT_FONT);
+        panel.add(alive);
     }
 
 
@@ -152,10 +164,19 @@ public class GameGui extends JFrame {
         cannonballRemain.setText("Cannon Ball Remain:" + balls + "  | ");
     }
 
-    public void updatePercentage(int planes, int shutCount) {
+    public void updateHitRate(int planes, int shutCount) {
         DecimalFormat format = (DecimalFormat) DecimalFormat.getPercentInstance(Locale.CHINA);
         format.setMinimumFractionDigits(2);
-        percentage.setText("Percentage: " + format.format(planes * 1f / shutCount) + "  | ");
+        percentage.setText("|  Hit Rate: " + format.format(planes * 1f / shutCount) + "  | ");
+    }
+
+    public void updateAlive(boolean isAlive) {
+        if (!isAlive) {
+            alive.setForeground(Color.RED);
+        } else {
+            alive.setForeground(Color.GREEN);
+        }
+        alive.setText(isAlive ? "  Alive  " : "  Died  ");
     }
 
 
@@ -163,5 +184,11 @@ public class GameGui extends JFrame {
 
     public Cannon.CallBack getCallBack() {
         return callBack;
+    }
+
+    private Cannon.AliveCallback aliveCallback;
+
+    public Cannon.AliveCallback getAliveCallback() {
+        return aliveCallback;
     }
 }

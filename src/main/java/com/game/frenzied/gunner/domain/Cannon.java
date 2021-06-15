@@ -19,10 +19,19 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
     private boolean isAntiBallWarned;
 
     private CallBack hintMessageCallback;
+    private AliveCallback aliveCallback;
 
+    @FunctionalInterface
     public interface CallBack {
         void update(int cannonballs, int antiBalls, int planes, int shotCount);
     }
+
+    @FunctionalInterface
+    public interface AliveCallback {
+        void updateAlive(boolean isAlive);
+    }
+
+
 
     public Cannon() {
         this(CENTER_POSITION, new Vector());
@@ -56,6 +65,8 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
 
             ScreenMessage screenMessage = new ScreenMessage("You Died!");
             ScreenMessage.add(screenMessage);
+
+            aliveCallback.updateAlive(false);
         }
     }
 
@@ -76,7 +87,7 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
 
         if (!isCannonBallWarned && cannonBalls <= 8) {
             SoundEffect.forWarnClock().play();
-            ScreenMessage message = new ScreenMessage("[WARN]", position, Color.RED);
+            ScreenMessage message = new ScreenMessage("[WARN]", new Vector(), Color.RED);
             ScreenMessage.add(message);
             isCannonBallWarned = true;
         }
@@ -109,7 +120,7 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
         if (!isAntiBallWarned && antiaircraftBalls < 20) {
             logger.info("quick shoot warn....");
             SoundEffect.forWarnClock().play();
-            ScreenMessage message = new ScreenMessage("[WARN]", position, Color.RED);
+            ScreenMessage message = new ScreenMessage("[WARN]", new Vector(), Color.RED);
             ScreenMessage.add(message);
             isAntiBallWarned = true;
         }
@@ -184,5 +195,16 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
 
     public void setHintMessageCallback(CallBack hintMessageCallback) {
         this.hintMessageCallback = hintMessageCallback;
+    }
+
+    public void setAliveCallback(AliveCallback aliveCallback) {
+        this.aliveCallback = aliveCallback;
+    }
+
+    public void resetAlive() {
+        if (aliveCallback == null) {
+            throw new RuntimeException("alive call back not be init...");
+        }
+        aliveCallback.updateAlive(true);
     }
 }

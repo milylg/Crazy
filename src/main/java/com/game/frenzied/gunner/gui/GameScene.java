@@ -1,4 +1,4 @@
-package com.game.frenzied.gunner.view;
+package com.game.frenzied.gunner.gui;
 
 import javax.media.opengl.*;
 
