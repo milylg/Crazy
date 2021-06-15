@@ -1,11 +1,15 @@
 package com.game.frenzied.gunner.domain;
 
 import com.game.frenzied.gunner.common.SoundEffect;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,85 +22,206 @@ public class PlaneFleet {
 
 
     private static BattleDisposition disposition;
-    private static TransportPlaneScheduler transportPlaneScheduler;
+    private static SelfTransportPlaneFleet selfTransportPlaneFleet;
+
     private static Random gen = new Random();
     private static int hitPlanes;
+    private static int trustDegreeValue = 15;
     private static ReportCallback reportCallback;
+    private static ExecutorService executorService;
+    private static boolean pause = false;
 
     static {
         reportCallback = new CrashReport();
+        executorService = new ThreadPoolExecutor(
+                7,
+                10,
+                60L,
+                TimeUnit.SECONDS,
+                new ArrayBlockingQueue(10)
+        );
     }
 
+    @FunctionalInterface
     public interface ReportCallback {
         void report();
     }
 
+
     private static class CrashReport implements ReportCallback {
 
+        // have thread safe problem
         @Override
         public void report() {
             hitPlanes ++;
         }
     }
 
-    private static class BattleDisposition extends Thread {
+    private static class TrustDegreeReport implements ReportCallback {
 
+        // have thread safe problem
         @Override
-        public void run() {
-            try {
-                while (!isInterrupted()) {
-                    BattlePlane plane = new BattlePlane(
-                            gen.nextBoolean()
-                                    ? BattlePlane.OrientationType.TO_LEFT
-                                    : BattlePlane.OrientationType.TO_RIGHT
-                    );
-                    plane.setReportCallback(reportCallback);
-                    AbstractActor.abstractActors.add(plane);
-                    int waitTime = gen.nextInt(2);
-                    TimeUnit.SECONDS.sleep(waitTime);
-                    plane.shootBall();
-                    waitTime = gen.nextInt(7);
-                    TimeUnit.SECONDS.sleep(waitTime);
-                }
-            } catch (InterruptedException e) {
-
-            }
+        public void report() {
+            trustDegreeValue ++;
         }
     }
 
-    private static class TransportPlaneScheduler extends Thread {
+    private static abstract class RecoverSuspendMechanism {
+        private static final Logger log = LoggerFactory.getLogger(RecoverSuspendMechanism.class);
+        private boolean isSuspend = false;
+        protected boolean isInterrupt = false;
+        private Object lock = new Object();
+
+        protected void checkSuspendState() {
+
+            synchronized (lock) {
+                log.info("acquire lock....");
+                if (isSuspend) {
+                    log.info("suspend:true ... wait suspend is false");
+                    try {
+                        lock.wait();
+                    } catch (InterruptedException e) {
+                        // log
+                    }
+                }
+            }
+            log.info("skip synchronized block... suspend = {}", isSuspend);
+        }
+
+        public void setSuspend(boolean pause) {
+
+            log.info("setSuspend method");
+            synchronized (lock) {
+                log.info("acquire lock... isSuspend:{}", isSuspend);
+                this.isSuspend = pause;
+                lock.notifyAll();
+            }
+            log.info("set isSuspend = {}, then = {}", pause, isSuspend);
+        }
+
+
+        protected abstract void execute();
+
+        // Bug:this way is not unuseful, so......
+//        private void waitRandomSecond(int bound) {
+//            try {
+//                TimeUnit.SECONDS.sleep(gen.nextInt(bound));
+//            } catch (InterruptedException e) {
+//                // log
+//            }
+//        }
+//
+//        private void waitRandomSecond(int base, int bound) {
+//            try {
+//                TimeUnit.SECONDS.sleep(base + gen.nextInt(bound));
+//            } catch (InterruptedException e) {
+//                // log
+//            }
+//        }
+
+    }
+
+    private static class BattleDisposition extends RecoverSuspendMechanism implements Runnable {
 
         @Override
         public void run() {
-            try {
-                while (!isInterrupted()) {
-                    TransportPlane plane = new TransportPlane();
-                    SoundEffect.forTransportPlaneFly().play();
-                    AbstractActor.abstractActors.add(plane);
-                    int waitTime = gen.nextInt(2);
-                    TimeUnit.SECONDS.sleep(waitTime);
-                    plane.release();
-                    waitTime = 30 + gen.nextInt(10);
-                    TimeUnit.SECONDS.sleep(waitTime);
-                }
-            } catch (InterruptedException e) {
-
+            while (true) {
+                checkSuspendState();
+                execute();
             }
         }
+
+        @Override
+        protected void execute() {
+            log.info("execute:build battle plane.");
+            BattlePlane plane = new BattlePlane(
+                    gen.nextBoolean()
+                            ? BattlePlane.OrientationType.TO_LEFT
+                            : BattlePlane.OrientationType.TO_RIGHT
+            );
+
+            plane.setReportCallback(reportCallback);
+            AbstractActor.abstractActors.add(plane);
+            try {
+                TimeUnit.SECONDS.sleep(gen.nextInt(1));
+                plane.shootBall();
+                TimeUnit.SECONDS.sleep(gen.nextInt(1));
+            } catch (InterruptedException e) {
+                // log
+            }
+
+            // here is a bug: why method is unuseful.
+//            waitRandomSecond(2);
+//            plane.shootBall();
+//            waitRandomSecond(3, gen.nextInt(2));
+        }
     }
+
+    private static class SelfTransportPlaneFleet extends RecoverSuspendMechanism implements Runnable {
+
+        private static final int DEFAULT_DEGREE_BELIEF = 10;
+        private int degreeBelief;
+
+        public SelfTransportPlaneFleet() {
+            this(DEFAULT_DEGREE_BELIEF);
+        }
+
+        public SelfTransportPlaneFleet(int degreeBelief) {
+            this.degreeBelief = degreeBelief;
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                checkSuspendState();
+                execute();
+            }
+        }
+
+        @Override
+        protected void execute() {
+            log.info("execute:build transport plane.");
+            TransportPlane plane = new TransportPlane();
+            SoundEffect.forTransportPlaneFly().play();
+            AbstractActor.abstractActors.add(plane);
+            try {
+                TimeUnit.SECONDS.sleep(gen.nextInt(2));
+                plane.release();
+                TimeUnit.SECONDS.sleep(degreeBelief + gen.nextInt(degreeBelief/2));
+            } catch (InterruptedException e) {
+                // log
+            }
+            // Unknow Bug: it's unuseful. method only run once.
+//            waitRandomSecond(2);
+//            plane.release();
+//            waitRandomSecond(degreeBelief, gen.nextInt(degreeBelief/2));
+        }
+
+    }
+
 
     public static void deploy() {
-        disposition = new BattleDisposition();
-        disposition.start();
-
-        transportPlaneScheduler = new TransportPlaneScheduler();
-        transportPlaneScheduler.start();
+        if (disposition == null) {
+            disposition = new BattleDisposition();
+            executorService.submit(disposition);
+        }
+        if (selfTransportPlaneFleet == null) {
+            selfTransportPlaneFleet = new SelfTransportPlaneFleet(trustDegreeValue);
+            executorService.submit(selfTransportPlaneFleet);
+        }
     }
 
 
     public static void pause() {
-        disposition.interrupt();
-        transportPlaneScheduler.interrupt();
+        pause = !pause;
+        disposition.setSuspend(pause);
+        selfTransportPlaneFleet.setSuspend(pause);
+    }
+
+    @Deprecated
+    public static void pause(boolean isSuspend) {
+        disposition.setSuspend(isSuspend);
+        selfTransportPlaneFleet.setSuspend(isSuspend);
     }
 
     public static int hitPlanes() {
@@ -105,6 +230,8 @@ public class PlaneFleet {
 
     public static void reset() {
         hitPlanes = 0;
+        trustDegreeValue = 15;
+        pause = false;
     }
 
 }
