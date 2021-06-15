@@ -7,7 +7,7 @@ import com.game.frenzied.gunner.domain.AbstractActor;
 import com.game.frenzied.gunner.domain.BombShelter;
 import com.game.frenzied.gunner.domain.Cannon;
 import com.game.frenzied.gunner.domain.PlaneFleet;
-import com.game.frenzied.gunner.view.GameGui;
+import com.game.frenzied.gunner.gui.GameGui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +63,7 @@ public class ApplicationStarter {
         @Override
         public void actionPerformed(ActionEvent e) {
             init();
-            gameGui.updateState("State: Running | ");
+            gameGui.updateState("State: Running   ");
         }
     }
 
@@ -73,7 +73,7 @@ public class ApplicationStarter {
         public void actionPerformed(ActionEvent e) {
             paused = isPaused() ? false : true;
             // TODO: REFACTOR IT
-            gameGui.updateState(paused ? "State: Paused | " : "State: Running |");
+            gameGui.updateState(paused ? "State: Paused   " : "State: Running   ");
             PlaneFleet.pause();
         }
     }
@@ -97,9 +97,14 @@ public class ApplicationStarter {
 
         playerCannon = new Cannon();
         AbstractActor.abstractActors.add(playerCannon);
+
         gameGui.updateAntiBallLabel(playerCannon.getAntiaircraftBalls());
         gameGui.updateCannonBallLabel(playerCannon.getCannonBalls());
+
         playerCannon.setHintMessageCallback(gameGui.getCallBack());
+        playerCannon.setAliveCallback(gameGui.getAliveCallback());
+        playerCannon.resetAlive();
+
         PlaneFleet.deploy();
         PlaneFleet.reset();
     }
