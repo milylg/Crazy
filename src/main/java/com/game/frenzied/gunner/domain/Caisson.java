@@ -38,6 +38,12 @@ public class Caisson extends AbstractActor {
         antiaircraftBalls = 200 + gen.nextInt(200);
 
         isOnTheGround = false;
+
+        abstractActors.add(this);
+    }
+
+    protected static Caisson buildFor(AbstractActor parent) {
+        return new Caisson(parent);
     }
 
     @Override

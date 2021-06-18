@@ -14,10 +14,10 @@ public class PlasmaBaseParticle extends BaseParticle {
 	private static final float PLASMA_SPIN = 0.2f;
 	private final float PLASMA_SIZE = 0.01f;
 	
-	public PlasmaBaseParticle(AbstractActor ship) {
-		position = new Vector(ship.getTailPosition());
+	public PlasmaBaseParticle(AbstractActor parent) {
+		position = new Vector(parent.getTailPosition());
 		// Relative to the ship
-		velocity = new Vector(ship.getVelocity());
+		velocity = new Vector(parent.getVelocity());
 		// Add the speed of the shot
 		velocity.incrementXBy(Math.cos(gen.nextFloat() * 2 * Math.PI));
 		velocity.incrementYBy(Math.sin(gen.nextFloat() * 2 * Math.PI));

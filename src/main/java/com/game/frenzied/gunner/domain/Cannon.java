@@ -52,6 +52,12 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
         shotCount = 0;
         isCannonBallWarned = false;
         isAntiBallWarned = false;
+
+        abstractActors.add(this);
+    }
+
+    public static Cannon build() {
+        return new Cannon();
     }
 
 
@@ -92,8 +98,7 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
             isCannonBallWarned = true;
         }
 
-        CannonBall ball = new CannonBall(this);
-        AbstractActor.abstractActors.add(ball);
+        CannonBall ball = CannonBall.buildFor(this);
         cannonBalls --;
         shotCount ++;
         hintMessageCallback.update(cannonBalls, antiaircraftBalls, PlaneFleet.hitPlanes(), shotCount);
@@ -125,8 +130,7 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
             isAntiBallWarned = true;
         }
 
-        AntiaircraftBall ball = new AntiaircraftBall(this);
-        AbstractActor.abstractActors.add(ball);
+        AntiaircraftBall ball = AntiaircraftBall.buildFor(this);
         antiaircraftBalls --;
         shotCount ++;
         hintMessageCallback.update(cannonBalls, antiaircraftBalls, PlaneFleet.hitPlanes(), shotCount);

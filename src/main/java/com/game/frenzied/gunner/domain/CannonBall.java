@@ -20,12 +20,12 @@ public class CannonBall extends AbstractActor {
     private static final float STATIC_WIND_RESISTANCE = -0.00002f;
     private static final float GRAVITY = -0.0004f;
 
-    public CannonBall(AbstractActor ship) {
+    private CannonBall(AbstractActor ship) {
         // Call our other constructor with a zero deflection angle
         this(ship, 0);
     }
 
-    public CannonBall(AbstractActor ship, float deflectionAngle) {
+    private CannonBall(AbstractActor ship, float deflectionAngle) {
         position = new Vector(ship.getNosePosition());
         // Relative to the Cannon
         velocity = new Vector(ship.getVelocity());
@@ -39,6 +39,11 @@ public class CannonBall extends AbstractActor {
         theta = 0;
         id = generateId();
         parentId = ship.id;
+        abstractActors.add(this);
+    }
+
+    protected static CannonBall buildFor(AbstractActor parentActor) {
+        return new CannonBall(parentActor);
     }
 
     @Override
@@ -46,7 +51,7 @@ public class CannonBall extends AbstractActor {
 
         if (other.parentId == parentId) {
             ParticleSystem.addDebrisParticle(this);
-            SoundEffect.forBulletHit().play();
+            SoundEffect.forSmallBoomHit().play();
             delete();
             return;
         }
@@ -63,7 +68,7 @@ public class CannonBall extends AbstractActor {
 
         if (other.id != parentId) {
             ParticleSystem.addDebrisParticle(this);
-            SoundEffect.forBulletHit().play();
+            SoundEffect.forSmallBoomHit().play();
             delete();
         }
     }

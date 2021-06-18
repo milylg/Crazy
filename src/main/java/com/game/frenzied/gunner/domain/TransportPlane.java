@@ -24,7 +24,10 @@ public class TransportPlane extends AbstractActor implements Transportable {
         id = generateId();
         sprite = Sprite.transportPlane();
         isAlive = true;
+        abstractActors.add(this);
     }
+
+
 
     @Override
     public void update() {
@@ -38,13 +41,15 @@ public class TransportPlane extends AbstractActor implements Transportable {
     public void handleCollision(AbstractActor other) {
         if (other instanceof AntiaircraftBall) {
             ParticleSystem.addExplosion(position);
-            SoundEffect.forBulletHit();
+            // TODO: test it sounds
+            SoundEffect.forSmallBoomHit().play();
             delete();
             return;
         }
         if (other instanceof CannonBall) {
             ParticleSystem.addExplosion(position);
-            SoundEffect.forBulletHit();
+            // TODO: test it sounds
+            SoundEffect.forSmallBoomHit().play();
             delete();
             return;
         }
@@ -52,7 +57,6 @@ public class TransportPlane extends AbstractActor implements Transportable {
 
     @Override
     public void release() {
-        Caisson caisson = new Caisson(this);
-        AbstractActor.abstractActors.add(caisson);
+        Caisson.buildFor(this);
     }
 }

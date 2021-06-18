@@ -25,12 +25,12 @@ public class AntiaircraftBall extends AbstractActor {
     private static final float STATIC_WIND_RESISTANCE = -0.0000002f;
     private static final float GRAVITY = -0.00008f;
 
-    public AntiaircraftBall(AbstractActor ship) {
+    private AntiaircraftBall(AbstractActor ship) {
         // Call our other constructor with a zero deflection angle
         this(ship, 0);
     }
 
-    public AntiaircraftBall(AbstractActor ship, float deflectionAngle) {
+    private AntiaircraftBall(AbstractActor ship, float deflectionAngle) {
         position = new Vector(ship.getNosePosition());
         // Relative to the Cannon
         velocity = new Vector(ship.getVelocity());
@@ -44,6 +44,13 @@ public class AntiaircraftBall extends AbstractActor {
         theta = 0;
         id = generateId();
         parentId = ship.id;
+
+        abstractActors.add(this);
+    }
+
+
+    protected static AntiaircraftBall buildFor(AbstractActor parentActor) {
+        return new AntiaircraftBall(parentActor);
     }
 
     @Override

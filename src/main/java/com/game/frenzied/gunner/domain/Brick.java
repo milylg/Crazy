@@ -15,7 +15,7 @@ public class Brick extends AbstractActor {
     private static final float BRICK_SIZE = 0.1f;
 
 
-    public Brick(Vector pos) {
+    private Brick(Vector pos) {
         position = new Vector(pos);
         velocity = new Vector();
         sprite = Sprite.brick();
@@ -24,13 +24,19 @@ public class Brick extends AbstractActor {
         theta = 0;
         id = generateId();
         alive = 5;
+
+        abstractActors.add(this);
+    }
+
+    protected static Brick buildAt(Vector position) {
+        return new Brick(position);
     }
 
     @Override
     public void handleCollision(AbstractActor other) {
         if (other instanceof CannonBall || other instanceof Missile) {
             ParticleSystem.addDebrisParticle(this);
-            SoundEffect.forBulletHit().play();
+            SoundEffect.forSmallBoomHit().play();
             if (--alive <=0) {
                 delete();
             }

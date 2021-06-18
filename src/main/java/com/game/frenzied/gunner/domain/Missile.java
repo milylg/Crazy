@@ -16,30 +16,32 @@ public class Missile extends AbstractActor {
     private static final Logger log = LoggerFactory.getLogger(CannonBall.class);
 
     private static final long serialVersionUID = -6745335968576285239L;
-    private static final float BULLET_VELOCITY = 0.035f;
     private static final float BULLET_SIZE = 0.05f;
-    private static final int BULLET_LIFETIME = 200;
     private static final float BULLET_DENSITY = 90;
 
-    private static final float STATIC_WIND_RESISTANCE = -0.00002f;
     private static final float GRAVITY = -0.0004f;
 
 
-    public Missile(AbstractActor ship, boolean isToLeft) {
-        position = new Vector(ship.getPosition());
-        velocity = new Vector(ship.getVelocity());
+    private Missile(AbstractActor parent, boolean isToLeft) {
+        position = new Vector(parent.getPosition());
+        velocity = new Vector(parent.getVelocity());
 
         width = BULLET_SIZE;
         height = BULLET_SIZE;
         theta = 0;
         id = generateId();
-        parentId = ship.id;
+        parentId = parent.id;
 
         sprite = isToLeft
                 ? Sprite.missileLeft()
                 : Sprite.missileRight();
 
         isAlive = true;
+        abstractActors.add(this);
+    }
+
+    protected static Missile buildFor(AbstractActor parent, boolean isToLeft) {
+        return new Missile(parent, isToLeft);
     }
 
     @Override
@@ -58,9 +60,17 @@ public class Missile extends AbstractActor {
             return;
         }
 
+        if (other instanceof Cannon) {
+            ParticleSystem.addDebrisParticle(this);
+            SoundEffect.forCannonBoom().play();
+            delete();
+            setAlive(false);
+            return;
+        }
+
         if (other.id != parentId) {
             ParticleSystem.addDebrisParticle(this);
-            SoundEffect.forBulletHit().play();
+            SoundEffect.forSmallBoomHit().play();
             delete();
             setAlive(false);
         }

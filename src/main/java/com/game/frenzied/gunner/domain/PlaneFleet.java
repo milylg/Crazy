@@ -102,7 +102,7 @@ public class PlaneFleet {
 
         protected abstract void execute();
 
-        // Bug:this way is not unuseful, so......
+        // Bug:this way is not normal running, so......
 //        private void waitRandomSecond(int bound) {
 //            try {
 //                TimeUnit.SECONDS.sleep(gen.nextInt(bound));
@@ -134,14 +134,15 @@ public class PlaneFleet {
         @Override
         protected void execute() {
             log.info("execute:build battle plane.");
-            BattlePlane plane = new BattlePlane(
+            BattlePlane plane = BattlePlane.buildActorOf(
                     gen.nextBoolean()
                             ? BattlePlane.OrientationType.TO_LEFT
                             : BattlePlane.OrientationType.TO_RIGHT
             );
 
+
             plane.setReportCallback(reportCallback);
-            AbstractActor.abstractActors.add(plane);
+
             try {
                 TimeUnit.SECONDS.sleep(gen.nextInt(1));
                 plane.shootBall();
@@ -183,7 +184,6 @@ public class PlaneFleet {
             log.info("execute:build transport plane.");
             TransportPlane plane = new TransportPlane();
             SoundEffect.forTransportPlaneFly().play();
-            AbstractActor.abstractActors.add(plane);
             try {
                 TimeUnit.SECONDS.sleep(gen.nextInt(2));
                 plane.release();
@@ -191,7 +191,7 @@ public class PlaneFleet {
             } catch (InterruptedException e) {
                 // log
             }
-            // Unknow Bug: it's unuseful. method only run once.
+            // Unknown Bug: it's unuseful. method only run once.
 //            waitRandomSecond(2);
 //            plane.release();
 //            waitRandomSecond(degreeBelief, gen.nextInt(degreeBelief/2));

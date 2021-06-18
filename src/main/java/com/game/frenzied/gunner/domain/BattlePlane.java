@@ -39,7 +39,7 @@ public class BattlePlane extends AbstractActor implements Weapon {
         }
     }
 
-    public BattlePlane(OrientationType type) {
+    private BattlePlane(OrientationType type) {
         width = BATTLE_PLANE_SIZE;
         height = BATTLE_PLANE_SIZE;
         position = new Vector(type.x, 0.35f + gen.nextFloat() / 2);
@@ -55,6 +55,12 @@ public class BattlePlane extends AbstractActor implements Weapon {
         isAlive = true;
         isHit = false;
         isReport = false;
+
+        abstractActors.add(this);
+    }
+
+    public static BattlePlane buildActorOf(OrientationType type) {
+        return new BattlePlane(type);
     }
 
     public void setReportCallback(PlaneFleet.ReportCallback reportCallback) {
@@ -117,8 +123,7 @@ public class BattlePlane extends AbstractActor implements Weapon {
         try {
             for (int use = 0; use < BALLS; use++) {
                 if (isAlive) {
-                    Missile missile = new Missile(this, isToLeft);
-                    AbstractActor.abstractActors.add(missile);
+                    Missile.buildFor(this, isToLeft);
                     TimeUnit.SECONDS.sleep(1);
                 }
             }
