@@ -233,12 +233,14 @@ public class SoundEffectResourceDownLoader {
      * @param args
      */
     public static void main(String[] args) {
-        String url = "https://cdn.staticcrate.com/stock-hd/audio/soundscrate-radar-ping-speed-5.mp3";
+        // String url = "https://cdn.staticcrate.com/stock-hd/audio/soundscrate-radar-ping-speed-5.mp3";
+
+        String url = "https://down.ear0.com:3321/index/preview?soundid=20503&type=mp3&audio=sound.mp3";
 
         SoundEffectResourceDownLoader loader
                 = new SoundEffectResourceDownLoader(
                 "D:\\IDEA\\Code\\frenzied-gunner\\src\\main\\resources\\sound-wait\\",
-                "radar-ping-speed-5.mp3"
+                "small-explode.mp3"
         );
 
         loader.download(url);

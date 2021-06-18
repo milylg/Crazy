@@ -8,12 +8,12 @@ import java.awt.event.KeyListener;
 
 public class KeyBoardEvent {
 
-    public static KeyboardInput listener = new KeyboardInput();
+    public static KeyboardEventHandler listener = new KeyboardEventHandler();
     static Cannon player;
 
 
     public static void update() {
-        KeyboardInput.poll();
+        KeyboardEventHandler.poll();
         player = FrenziedGunner.getCannonPlayer();
         if (listener.keyDown(KeyEvent.VK_LEFT)) {
             player.turnLeft();
@@ -36,7 +36,7 @@ public class KeyBoardEvent {
     }
 
 
-    static class KeyboardInput implements KeyListener {
+    static class KeyboardEventHandler implements KeyListener {
 
         private static final int KEY_COUNT = 256;
 
@@ -65,7 +65,7 @@ public class KeyBoardEvent {
          */
         private static KeyState[] keys = null;
 
-        public KeyboardInput() {
+        public KeyboardEventHandler() {
             currentKeys = new boolean[KEY_COUNT];
             keys = new KeyState[KEY_COUNT];
             for (int i = 0; i < KEY_COUNT; ++i) {

@@ -263,7 +263,10 @@ public class GameScene extends GLCanvas {
         GLUT glut = new GLUT();
 
         gl.glDisable(GL.GL_TEXTURE_2D);
-        for (ScreenMessage msg : ScreenMessage.getMessages()) {
+        Iterator<ScreenMessage> messageIterator =
+                ScreenMessage.getMessages().iterator();
+        while (messageIterator.hasNext()) {
+            ScreenMessage msg = messageIterator.next();
             gl.glLoadIdentity();
             gl.glColor4f((float) msg.getColor().getRed() / 256,
                         (float) msg.getColor().getGreen() / 256,

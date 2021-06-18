@@ -26,11 +26,6 @@ public class FrenziedGunner {
      */
     private static boolean paused;
 
-    /**
-     * 游戏中最多允许山体块的数量
-     */
-    private static final int NUMBER_ASTEROIDS_IN_GAME = 20;
-
     private static boolean gameOver = false;
 
     private static int width, height;
@@ -95,8 +90,7 @@ public class FrenziedGunner {
 
         BombShelter.buildShelter();
 
-        playerCannon = new Cannon();
-        AbstractActor.abstractActors.add(playerCannon);
+        playerCannon = Cannon.build();
 
         gameGui.updateAntiBallLabel(playerCannon.getAntiaircraftBalls());
         gameGui.updateCannonBallLabel(playerCannon.getCannonBalls());
@@ -105,8 +99,8 @@ public class FrenziedGunner {
         playerCannon.setAliveCallback(gameGui.getAliveCallback());
         playerCannon.resetAlive();
 
-        PlaneFleet.deploy();
         PlaneFleet.reset();
+        PlaneFleet.deploy();
     }
 
     /**
@@ -122,7 +116,6 @@ public class FrenziedGunner {
         AbstractActor.updateActors();
         ScreenMessage.updateMessages();
         ParticleSystem.updateParticles();
-        // TODO:更新生命值
     }
 
     /**

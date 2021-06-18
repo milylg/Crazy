@@ -122,7 +122,7 @@ public class GameGui extends JFrame {
     }
 
     private void addPercentageLabel(JPanel panel) {
-        percentage = new JLabel("Hit Rate: 0.00% | ");
+        percentage = new JLabel("   Hit Rate: 0.00% | ");
         percentage.setForeground(Color.GREEN);
         percentage.setFont(DEFAULT_FONT);
         panel.add(percentage);
@@ -137,8 +137,10 @@ public class GameGui extends JFrame {
     }
 
     private void addAliveLabel(JPanel panel) {
-        alive = new JLabel("Alive: YES | ");
+        alive = new JLabel();
+        alive.setOpaque(true);
         alive.setForeground(Color.GREEN);
+        alive.setBackground(Color.GRAY);
         alive.setFont(DEFAULT_FONT);
         panel.add(alive);
     }
@@ -167,12 +169,12 @@ public class GameGui extends JFrame {
     public void updateHitRate(int planes, int shutCount) {
         DecimalFormat format = (DecimalFormat) DecimalFormat.getPercentInstance(Locale.CHINA);
         format.setMinimumFractionDigits(2);
-        percentage.setText("|  Hit Rate: " + format.format(planes * 1f / shutCount) + "  | ");
+        percentage.setText("   Hit Rate: " + format.format(planes * 1f / shutCount) + "  | ");
     }
 
     public void updateAlive(boolean isAlive) {
         if (!isAlive) {
-            alive.setForeground(Color.RED);
+            alive.setForeground(Color.ORANGE);
         } else {
             alive.setForeground(Color.GREEN);
         }

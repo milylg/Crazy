@@ -24,6 +24,7 @@ public class SoundEffect {
     private static final String TRANSPORT_PLANE_FLY_FILE = "transport.mp3";
     private static final String EMPTY_BALL_FILE = "empty-ball.mp3";
     private static final String WARN_CLOCK_FILE = "alarm-clock.mp3";
+    private static final String SMALL_BOOM_HIT = "small-explode.mp3";
 
     /**
      * whether open sound of actor
@@ -36,11 +37,12 @@ public class SoundEffect {
      */
     private static boolean loaded;
     private static Sound bulletShot;
-    private static Sound bulletHit;
+    private static Sound cannonBoomHit;
     private static Sound bulletQuicklyShot;
     private static Sound transportPlaneFly;
     private static Sound emptyBall;
     private static Sound warnClock;
+    private static Sound smallBoomHit;
 
 
     /**
@@ -61,11 +63,12 @@ public class SoundEffect {
     static private void loadSounds() {
         enabled = true;
         bulletShot = new Sound(BULLET_SHOT_FILE);
-        bulletHit = new Sound(BULLET_HIT_FILE);
+        cannonBoomHit = new Sound(BULLET_HIT_FILE);
         bulletQuicklyShot = new Sound(BULLET_QUICKLY_SHOT_FILE);
         transportPlaneFly = new Sound(TRANSPORT_PLANE_FLY_FILE);
         emptyBall = new Sound(EMPTY_BALL_FILE);
         warnClock = new Sound(WARN_CLOCK_FILE);
+        smallBoomHit = new Sound(SMALL_BOOM_HIT);
         loaded = true;
     }
 
@@ -91,8 +94,12 @@ public class SoundEffect {
     /**
      * @return our sound for when bullets hit things
      */
-    static public Sound forBulletHit() {
-        return bulletHit;
+    static public Sound forSmallBoomHit() {
+        return smallBoomHit;
+    }
+
+    static public Sound forCannonBoom() {
+        return cannonBoomHit;
     }
 
 
