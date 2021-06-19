@@ -15,3 +15,7 @@ There are some bug that find it but not to fix it.
 ## For what?
 - boring life... :-(
 - it maybe last work, so...
+
+## Disclaimer
+this work is base on the following repos:
+1.dlundquist/Asteroids(https://github.com/dlundquist/Asteroids.git)
