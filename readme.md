@@ -18,4 +18,4 @@ There are some bug that find it but not to fix it.
 
 ## Disclaimer
 this work is base on the following repos:
-1.dlundquist/Asteroids(https://github.com/dlundquist/Asteroids.git)
+-1.dlundquist/Asteroids(https://github.com/dlundquist/Asteroids.git)
