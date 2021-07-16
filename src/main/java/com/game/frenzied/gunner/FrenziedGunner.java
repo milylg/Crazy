@@ -58,7 +58,7 @@ public class FrenziedGunner {
         @Override
         public void actionPerformed(ActionEvent e) {
             init();
-            gameGui.updateState("State: Running   ");
+            gameGui.updateOperateState(true);
         }
     }
 
@@ -66,9 +66,8 @@ public class FrenziedGunner {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            paused = isPaused() ? false : true;
-            // TODO: REFACTOR IT
-            gameGui.updateState(paused ? "State: Paused   " : "State: Running   ");
+            togglePause();
+            gameGui.updateOperateState(isPaused());
             PlaneFleet.pause();
         }
     }
@@ -95,7 +94,8 @@ public class FrenziedGunner {
         gameGui.updateAntiBallLabel(playerCannon.getAntiaircraftBalls());
         gameGui.updateCannonBallLabel(playerCannon.getCannonBalls());
 
-        playerCannon.setHintMessageCallback(gameGui.getCallBack());
+        playerCannon.setCountRemainBallCallBack(gameGui.getCallBack());
+        playerCannon.setHitRateCallBack(gameGui.getHitRateCallBack());
         playerCannon.setAliveCallback(gameGui.getAliveCallback());
         playerCannon.resetAlive();
 
@@ -139,7 +139,7 @@ public class FrenziedGunner {
     }
 
     public static void togglePause() {
-        paused = paused ? false : true;
+        paused = !paused;
     }
 
     /**

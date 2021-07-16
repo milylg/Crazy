@@ -46,7 +46,6 @@ public class GameGui extends JFrame {
     private Button startGame;
     private JLabel antiaircraftBallRemain;
     private JLabel cannonballRemain;
-    private JLabel gameState;
     private JLabel percentage;
     private JLabel alive;
 
@@ -70,6 +69,7 @@ public class GameGui extends JFrame {
 
         // Initially it is not going to be visible
         setVisible(true);
+        // colorize(this.getRootPane());
     }
 
 
@@ -85,14 +85,17 @@ public class GameGui extends JFrame {
         addPercentageLabel(panel);
         addAntiaircraftBallRemainLabel(panel);
         addCannonBallRemainLabel(panel);
-        addGameStateLabel(panel);
 
         panel.add(startGame);
         panel.add(pauseGame);
 
-        callBack = (cannonballs, antiBalls, planes, shotCount) -> {
+        countBallCallBack = (cannonballs, antiBalls) -> {
             updateAntiBallLabel(antiBalls);
             updateCannonBallLabel(cannonballs);
+
+        };
+
+        hitRateCallBack = (planes, shotCount) -> {
             updateHitRate(planes, shotCount);
         };
 
@@ -108,32 +111,24 @@ public class GameGui extends JFrame {
 
 
     private void addAntiaircraftBallRemainLabel(JPanel panel) {
-        antiaircraftBallRemain = new JLabel("Anti Ball Remain:200");
+        antiaircraftBallRemain = new JLabel("[AntiBall: 100]");
         antiaircraftBallRemain.setForeground(Color.GREEN);
         antiaircraftBallRemain.setFont(DEFAULT_FONT);
         panel.add(antiaircraftBallRemain);
     }
 
     private void addCannonBallRemainLabel(JPanel panel) {
-        cannonballRemain = new JLabel("Cannon Ball Remain:200");
+        cannonballRemain = new JLabel("[CannonBall: 20]");
         cannonballRemain.setForeground(Color.GREEN);
         cannonballRemain.setFont(DEFAULT_FONT);
         panel.add(cannonballRemain);
     }
 
     private void addPercentageLabel(JPanel panel) {
-        percentage = new JLabel("   Hit Rate: 0.00% | ");
+        percentage = new JLabel("[Hit Rate: 0.00%]");
         percentage.setForeground(Color.GREEN);
         percentage.setFont(DEFAULT_FONT);
         panel.add(percentage);
-    }
-
-
-    private void addGameStateLabel(JPanel panel) {
-        gameState = new JLabel("State: Running");
-        gameState.setForeground(Color.GREEN);
-        gameState.setFont(DEFAULT_FONT);
-        panel.add(gameState);
     }
 
     private void addAliveLabel(JPanel panel) {
@@ -154,22 +149,32 @@ public class GameGui extends JFrame {
         startGame.addActionListener(action);
     }
 
-    public void updateState(String message) {
-        gameState.setText(message);
+    public void updateOperateState(boolean isStarted) {
+        if (isStarted) {
+            pauseGame.setBackground(Color.DARK_GRAY);
+            pauseGame.setForeground(Color.ORANGE);
+            startGame.setBackground(Color.DARK_GRAY);
+            startGame.setForeground(Color.ORANGE);
+        } else {
+            pauseGame.setBackground(Color.DARK_GRAY);
+            pauseGame.setForeground(Color.ORANGE);
+            startGame.setBackground(Color.GREEN);
+            startGame.setForeground(Color.DARK_GRAY);
+        }
     }
 
     public void updateAntiBallLabel(int balls) {
-        antiaircraftBallRemain.setText("Anti Ball Remain:" + balls + "  | ");
+        antiaircraftBallRemain.setText("[AntiBall: " + balls + "]");
     }
 
     public void updateCannonBallLabel(int balls) {
-        cannonballRemain.setText("Cannon Ball Remain:" + balls + "  | ");
+        cannonballRemain.setText("[CannonBall: " + balls + "]");
     }
 
     public void updateHitRate(int planes, int shutCount) {
         DecimalFormat format = (DecimalFormat) DecimalFormat.getPercentInstance(Locale.CHINA);
         format.setMinimumFractionDigits(2);
-        percentage.setText("   Hit Rate: " + format.format(planes * 1f / shutCount) + "  | ");
+        percentage.setText("[Hit Rate: " + format.format(planes * 1f / shutCount) + "]");
     }
 
     public void updateAlive(boolean isAlive) {
@@ -182,15 +187,21 @@ public class GameGui extends JFrame {
     }
 
 
-    private Cannon.CallBack callBack;
+    private Cannon.CountBallCallBack countBallCallBack;
 
-    public Cannon.CallBack getCallBack() {
-        return callBack;
+    public Cannon.CountBallCallBack getCallBack() {
+        return countBallCallBack;
     }
 
     private Cannon.AliveCallback aliveCallback;
 
     public Cannon.AliveCallback getAliveCallback() {
         return aliveCallback;
+    }
+
+    private Cannon.HitRateCallBack hitRateCallBack;
+
+    public Cannon.HitRateCallBack getHitRateCallBack() {
+        return hitRateCallBack;
     }
 }
