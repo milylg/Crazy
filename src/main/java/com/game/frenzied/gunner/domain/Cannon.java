@@ -18,12 +18,18 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
     private boolean isCannonBallWarned;
     private boolean isAntiBallWarned;
 
-    private CallBack hintMessageCallback;
+    private CountBallCallBack countRemainBallCallBack;
+    private HitRateCallBack hitRateCallBack;
     private AliveCallback aliveCallback;
 
     @FunctionalInterface
-    public interface CallBack {
-        void update(int cannonballs, int antiBalls, int planes, int shotCount);
+    public interface CountBallCallBack {
+        void update(int cannonballs, int antiBalls);
+    }
+
+    @FunctionalInterface
+    public interface HitRateCallBack {
+        void update(int planes, int shotCount);
     }
 
     @FunctionalInterface
@@ -73,6 +79,7 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
             ScreenMessage.add(screenMessage);
 
             aliveCallback.updateAlive(false);
+            AbstractActor.abstractActors.remove(this);
         }
     }
 
@@ -101,7 +108,8 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
         CannonBall ball = CannonBall.buildFor(this);
         cannonBalls --;
         shotCount ++;
-        hintMessageCallback.update(cannonBalls, antiaircraftBalls, PlaneFleet.hitPlanes(), shotCount);
+        countRemainBallCallBack.update(cannonBalls, antiaircraftBalls);
+        hitRateCallBack.update(PlaneFleet.hitPlanes(), shotCount);
 
         SoundEffect.forBulletShot().play();
 
@@ -133,7 +141,8 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
         AntiaircraftBall ball = AntiaircraftBall.buildFor(this);
         antiaircraftBalls --;
         shotCount ++;
-        hintMessageCallback.update(cannonBalls, antiaircraftBalls, PlaneFleet.hitPlanes(), shotCount);
+        countRemainBallCallBack.update(cannonBalls, antiaircraftBalls);
+        hitRateCallBack.update(PlaneFleet.hitPlanes(), shotCount);
 
         Vector difference = getPosition().minus(ball.getPosition());
         difference.scaleBy(-1.0f);
@@ -180,11 +189,10 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
     public void addBalls(int antiaircraftBalls, int cannonBalls) {
         this.antiaircraftBalls += antiaircraftBalls;
         this.cannonBalls += cannonBalls;
-        hintMessageCallback.update(
-                this.cannonBalls,
-                this.antiaircraftBalls,
-                PlaneFleet.hitPlanes(),
-                shotCount);
+
+        countRemainBallCallBack.update(this.cannonBalls, this.antiaircraftBalls);
+        hitRateCallBack.update(PlaneFleet.hitPlanes(), shotCount);
+
         isAntiBallWarned = false;
         isCannonBallWarned = false;
     }
@@ -197,8 +205,12 @@ public class Cannon extends AbstractActor implements Weapon, Mobile {
         return cannonBalls;
     }
 
-    public void setHintMessageCallback(CallBack hintMessageCallback) {
-        this.hintMessageCallback = hintMessageCallback;
+    public void setCountRemainBallCallBack(CountBallCallBack countRemainBallCallBack) {
+        this.countRemainBallCallBack = countRemainBallCallBack;
+    }
+
+    public void setHitRateCallBack(HitRateCallBack hitRateCallBack) {
+        this.hitRateCallBack = hitRateCallBack;
     }
 
     public void setAliveCallback(AliveCallback aliveCallback) {
