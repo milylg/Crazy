@@ -60,7 +60,7 @@ public class SoundEffectResourceDownLoader {
             url = new URL(resUrl);
             URLConnection connection = url.openConnection();
             fileSize = connection.getContentLength();
-            int blockFileNum = blockFileNum(connection.getContentLength());
+            int blockFileNum = blockFileNum(fileSize);
             latch = new CountDownLatch(blockFileNum);
             multipartDownload(fileName(url.getFile()), fileSize, blockFileNum);
             latch.await();
@@ -76,6 +76,9 @@ public class SoundEffectResourceDownLoader {
         } catch (InterruptedException e) {
             logger.warn("task interrupted:{}", e.getMessage());
             throw new RuntimeException("task interrupted");
+        } catch (Exception e) {
+            logger.warn(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -85,6 +88,9 @@ public class SoundEffectResourceDownLoader {
 
 
     private int blockFileNum(int fileSize) {
+        if (fileSize <= 0) {
+            throw new RuntimeException("failed to get resource!");
+        }
         int blockNum = fileSize / UNIT_BLOCK_SIZE;
 
         if ((fileSize % UNIT_BLOCK_SIZE) != 0) {
